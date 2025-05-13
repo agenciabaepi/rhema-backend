@@ -1,4 +1,11 @@
 const admin = require("firebase-admin");
+const serviceAccount = require("./firebase-key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
 const { Expo } = require("expo-server-sdk");
 const expo = new Expo();
 
