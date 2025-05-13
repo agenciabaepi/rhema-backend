@@ -52,6 +52,16 @@ async function agendarNotificacaoDevocional() {
   console.log('📅 Notificação agendada para hoje às 08:00');
 }
 
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
+
 app.post("/send-notification", async (req, res) => {
   const { to, title, body, agendamento } = req.body;
 
@@ -82,6 +92,10 @@ app.post("/send-notification", async (req, res) => {
     console.error("Erro ao agendar notificação:", error);
     res.status(500).json({ erro: "Falha ao agendar notificação" });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
 
 async function enviarNotificacaoAgora(to, title, body) {
