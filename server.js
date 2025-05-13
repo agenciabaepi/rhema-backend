@@ -99,6 +99,21 @@ app.get("/", (req, res) => {
   res.send("🚀 Backend RHEMA está online!");
 });
 
+// Rota para buscar histórico de notificações
+app.get("/notificacoes", async (req, res) => {
+  try {
+    const snapshot = await db.collection("notificacoes").orderBy("data", "desc").get();
+    const dados = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.json(dados);
+  } catch (err) {
+    console.error("Erro ao buscar notificações:", err);
+    res.status(500).json({ erro: "Erro ao buscar notificações" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
