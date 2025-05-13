@@ -1,13 +1,12 @@
 require('dotenv').config();
 const admin = require("firebase-admin");
-const fs = require("fs");
+
 
 let serviceAccount;
 try {
-  const rawKey = fs.readFileSync("./firebase-key.json", "utf8");
-  serviceAccount = JSON.parse(rawKey);
+  serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
 } catch (e) {
-  console.error("❌ Erro ao ler ou fazer parse do firebase-key.json.");
+  console.error("❌ Erro ao fazer parse da variável FIREBASE_KEY_JSON.");
   console.error(e);
   process.exit(1);
 }
