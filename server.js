@@ -147,3 +147,4 @@ async function enviarNotificacaoAgora(to, title, body) {
     console.error("Erro ao enviar push:", err);
   }
 }
+// Veja .env.example para o formato da variável FIREBASE_KEY_JSON
