@@ -94,6 +94,11 @@ app.post("/send-notification", async (req, res) => {
   }
 });
 
+// Rota de status do backend
+app.get("/", (req, res) => {
+  res.send("🚀 Backend RHEMA está online!");
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
