@@ -1,16 +1,13 @@
 require('dotenv').config();
 const admin = require("firebase-admin");
-
-if (!process.env.FIREBASE_KEY) {
-  console.error("❌ FIREBASE_KEY não definida. Configure a variável de ambiente corretamente no Railway.");
-  process.exit(1); // Encerra a aplicação com erro
-}
+const fs = require("fs");
 
 let serviceAccount;
 try {
-  serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
+  const rawKey = fs.readFileSync("./firebase-key.json", "utf8");
+  serviceAccount = JSON.parse(rawKey);
 } catch (e) {
-  console.error("❌ Erro ao fazer parse do FIREBASE_KEY. Verifique se está no formato JSON correto.");
+  console.error("❌ Erro ao ler ou fazer parse do firebase-key.json.");
   console.error(e);
   process.exit(1);
 }
