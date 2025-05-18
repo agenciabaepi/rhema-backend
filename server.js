@@ -84,11 +84,12 @@ app.post("/send-notification", async (req, res) => {
   const { to, title, body, agendamento } = req.body;
 
   try {
-    const dataAgendada = new Date(agendamento);
-    const delay = dataAgendada.getTime() - Date.now();
+    let agendamentoDate = agendamento ? new Date(agendamento) : new Date();
+
+    const delay = agendamentoDate.getTime() - Date.now();
 
     if (delay <= 0) {
-      console.log("⏱️ Agendamento em tempo passado, enviando agora...");
+      console.log("⏱️ Agendamento em tempo passado ou não informado, enviando agora...");
       await enviarNotificacaoAgora(to, title, body);
     } else {
       console.log(`⏳ Notificação será enviada em ${delay / 1000} segundos`);
@@ -97,20 +98,18 @@ app.post("/send-notification", async (req, res) => {
       }, delay);
     }
 
-    // Salva no histórico do Firestore
     try {
-      const agendamentoDate = new Date(agendamento);
-      if (isNaN(agendamentoDate)) {
-        console.error("❌ Data de agendamento inválida:", agendamento);
-      } else {
-        await db.collection("notificacoes").add({
-          to,
-          title,
-          body,
-          data: admin.firestore.Timestamp.fromDate(agendamentoDate),
-        });
-        console.log("✅ Notificação registrada no Firestore.");
+      if (isNaN(agendamentoDate.getTime())) {
+        agendamentoDate = new Date(); // fallback para agora
       }
+
+      await db.collection("notificacoes").add({
+        to,
+        title,
+        body,
+        data: admin.firestore.Timestamp.fromDate(agendamentoDate),
+      });
+      console.log("✅ Notificação registrada no Firestore.");
     } catch (erroFirestore) {
       console.error("❌ Erro ao salvar no Firestore:", erroFirestore);
     }
