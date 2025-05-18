@@ -11,6 +11,7 @@ if (!process.env.FIREBASE_KEY_JSON) {
 
 try {
   serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
+  console.log("🔥 Firebase key carregada com sucesso.");
 } catch (e) {
   console.error("❌ Erro ao fazer parse da variável FIREBASE_KEY_JSON.");
   console.error(e);
@@ -20,6 +21,7 @@ try {
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
+console.log("✅ Firebase inicializado");
 
 const db = admin.firestore();
 const { Expo } = require("expo-server-sdk");
@@ -78,6 +80,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.post("/send-notification", async (req, res) => {
+  console.log("📨 Dados recebidos:", req.body);
   const { to, title, body, agendamento } = req.body;
 
   try {
@@ -95,12 +98,22 @@ app.post("/send-notification", async (req, res) => {
     }
 
     // Salva no histórico do Firestore
-    await db.collection("notificacoes").add({
-      to,
-      title,
-      body,
-      data: admin.firestore.Timestamp.fromDate(new Date(agendamento)),
-    });
+    try {
+      const agendamentoDate = new Date(agendamento);
+      if (isNaN(agendamentoDate)) {
+        console.error("❌ Data de agendamento inválida:", agendamento);
+      } else {
+        await db.collection("notificacoes").add({
+          to,
+          title,
+          body,
+          data: admin.firestore.Timestamp.fromDate(agendamentoDate),
+        });
+        console.log("✅ Notificação registrada no Firestore.");
+      }
+    } catch (erroFirestore) {
+      console.error("❌ Erro ao salvar no Firestore:", erroFirestore);
+    }
 
     res.json({ sucesso: true });
   } catch (error) {
