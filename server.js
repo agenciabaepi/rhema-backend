@@ -3,6 +3,12 @@ const admin = require("firebase-admin");
 
 
 let serviceAccount;
+
+if (!process.env.FIREBASE_KEY_JSON) {
+  console.error("❌ Variável FIREBASE_KEY_JSON não está definida.");
+  process.exit(1);
+}
+
 try {
   serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
 } catch (e) {
